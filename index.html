@@ -1,0 +1,309 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Round+Square:wght@400;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+#game{font-family:'Nanum Round Square',sans-serif;padding:12px;background:#fff9f0;min-height:400px;border-radius:12px}
+h1{text-align:center;font-size:17px;font-weight:800;color:#333;margin-bottom:4px}
+.subtitle{text-align:center;font-size:10px;color:#999;margin-bottom:8px}
+.pinfo{display:flex;gap:6px;justify-content:center;margin-bottom:8px}
+.pcard{background:#fff;border-radius:8px;padding:6px 14px;border:2px solid #e91e63;background:#fce4ec;font-size:12px;display:flex;align-items:center;gap:6px}
+.pscore{font-size:11px;color:#e91e63;font-weight:800}
+.board{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-bottom:8px}
+.cell{background:#fff;border-radius:8px;padding:5px 3px;text-align:center;border:2px solid #e8e8e8;position:relative;min-height:82px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;font-size:9px}
+.cell.start-cell{background:#e8f5e9;border-color:#4caf50}
+.cell.finish-cell{background:#fff3e0;border-color:#ff9800}
+.cell.active-cell{border-color:#e91e63;box-shadow:0 0 0 3px rgba(233,30,99,.3);transform:scale(1.04)}
+.cell.correct-cell{border-color:#4caf50;background:#e8f5e9}
+.cell.wrong-cell{border-color:#f44336;background:#ffebee}
+.cnum{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;margin:0 auto 2px;flex-shrink:0}
+.cicon{font-size:16px;line-height:1}
+.ctext{font-size:8.5px;line-height:1.3;color:#555;flex:1;display:flex;align-items:center;text-align:center;padding:1px 2px}
+.piece{position:absolute;top:3px;right:3px;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;box-shadow:0 2px 4px rgba(0,0,0,.2);z-index:5}
+.info-cell{background:linear-gradient(135deg,#f0f8ff,#f0fff4);border-radius:8px;border:1.5px dashed #ccc;min-height:82px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px 4px}
+.empty-cell{min-height:82px}
+.controls{display:flex;gap:8px;justify-content:center;align-items:center;margin-bottom:8px}
+.dice-wrap{width:50px;height:50px;background:#fff;border:2px solid #ddd;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:32px}
+.dice-wrap.rolling{animation:spin .5s ease}
+@keyframes spin{0%,100%{transform:rotate(0)}30%{transform:rotate(-15deg) scale(1.1)}70%{transform:rotate(15deg) scale(1.1)}}
+.btn{background:#e91e63;color:#fff;border:none;border-radius:20px;padding:8px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn:hover{background:#c2185b;transform:scale(1.04)}
+.btn:disabled{background:#ccc;cursor:not-allowed;transform:none}
+.btn.gray{background:#78909c}
+.btn.gray:hover{background:#546e7a}
+.status{background:#fff;border-radius:10px;border:2px dashed #e91e63;padding:8px 12px;text-align:center;margin-bottom:6px;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.status-title{font-size:11px;font-weight:800;color:#e91e63}
+.status-desc{font-size:13px;font-weight:700;color:#222;line-height:1.4}
+.quiz-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:50;border-radius:12px}
+.quiz-box{background:#fff;border-radius:18px;padding:22px 18px;max-width:300px;width:92%;text-align:center}
+.qicon{font-size:36px;margin-bottom:6px}
+.qtext{font-size:14px;font-weight:800;color:#222;line-height:1.6;margin-bottom:14px;white-space:pre-line}
+.qbtn-row{display:flex;gap:8px;justify-content:center}
+.qbtn{padding:10px 18px;border-radius:20px;border:2px solid;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .15s}
+.qbtn:hover{transform:scale(1.06)}
+.qbtn.생산{background:#e3f2fd;border-color:#1565c0;color:#1565c0}
+.qbtn.소비{background:#fce4ec;border-color:#c62828;color:#c62828}
+.qbtn.분배{background:#e8f5e9;border-color:#2e7d32;color:#2e7d32}
+.result-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:60;border-radius:12px}
+.result-box{background:#fff;border-radius:18px;padding:24px 20px;max-width:300px;width:92%;text-align:center}
+.result-big{font-size:48px;margin-bottom:8px}
+.result-title{font-size:20px;font-weight:800;margin-bottom:6px}
+.result-msg{font-size:12px;color:#666;line-height:1.7;margin-bottom:14px;white-space:pre-line}
+.end-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:70;border-radius:12px}
+.end-box{background:#fff;border-radius:18px;padding:28px 20px;max-width:300px;width:92%;text-align:center}
+.legend{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;font-size:9.5px}
+.leg{display:flex;align-items:center;gap:3px}
+.lbadge{font-size:8.5px;padding:1px 5px;border-radius:8px;font-weight:700}
+.lb생산{background:#e3f2fd;color:#1565c0}
+.lb소비{background:#fce4ec;color:#c62828}
+.lb분배{background:#e8f5e9;color:#2e7d32}
+</style>
+
+<h2 class="sr-only">우리 동네 경제 탐험 1인 보드게임</h2>
+
+<div id="game">
+  <h1>🏘️ 우리 동네 경제 탐험</h1>
+  <div class="subtitle">주사위를 굴리고 → 이동 → 어떤 활동인지 맞춰보세요!</div>
+  <div class="pinfo">
+    <div class="pcard">
+      <span style="font-size:18px">🐶</span>
+      <div>
+        <div style="font-weight:800;font-size:12px">나의 점수</div>
+        <div class="pscore" id="scoreDisplay">0점 · 0/15칸</div>
+      </div>
+    </div>
+  </div>
+  <div class="status">
+    <div class="status-title" id="stitle">🎲 게임 시작!</div>
+    <div class="status-desc" id="sdesc">주사위를 굴려 시작하세요</div>
+  </div>
+  <div class="controls">
+    <div class="dice-wrap" id="diceEl">🎲</div>
+    <button class="btn" id="rollBtn" onclick="rollDice()">🎲 주사위 굴리기</button>
+    <button class="btn gray" onclick="resetGame()" style="font-size:11px;padding:6px 10px">↺ 처음부터</button>
+  </div>
+  <div class="board" id="board"></div>
+  <div class="legend">
+    <div class="leg"><span class="lbadge lb생산">생산</span>만들거나 서비스</div>
+    <div class="leg"><span class="lbadge lb소비">소비</span>사용하는 활동</div>
+    <div class="leg"><span class="lbadge lb분배">분배</span>일한 대가 받기</div>
+  </div>
+</div>
+
+<div class="quiz-overlay" id="quizOverlay" style="display:none">
+  <div class="quiz-box">
+    <div class="qicon" id="qicon"></div>
+    <div class="qtext" id="qtext"></div>
+    <div class="qbtn-row">
+      <button class="qbtn 생산" onclick="answer('생산')">⚙️ 생산</button>
+      <button class="qbtn 소비" onclick="answer('소비')">🛍️ 소비</button>
+      <button class="qbtn 분배" onclick="answer('분배')">💰 분배</button>
+    </div>
+  </div>
+</div>
+
+<div class="result-overlay" id="resultOverlay" style="display:none">
+  <div class="result-box">
+    <div class="result-big" id="rBig"></div>
+    <div class="result-title" id="rTitle"></div>
+    <div class="result-msg" id="rMsg"></div>
+    <button class="btn" onclick="closeResult()">확인</button>
+  </div>
+</div>
+
+<div class="end-overlay" id="endOverlay" style="display:none">
+  <div class="end-box">
+    <div style="font-size:52px;margin-bottom:8px">🏆</div>
+    <h2 style="font-size:20px;font-weight:800;margin-bottom:8px">도착!</h2>
+    <p style="font-size:15px;font-weight:800;color:#e91e63;margin-bottom:6px" id="endScore"></p>
+    <p style="font-size:12px;color:#999;margin-bottom:16px" id="endMsg"></p>
+    <button class="btn" onclick="resetGame()">다시 하기</button>
+  </div>
+</div>
+
+<script>
+const CELLS=[
+  {num:0, icon:'🚀',text:'출발!',type:null},
+  {num:1, icon:'☕',text:'카페 사장님이 음료를 만들어요',type:'생산'},
+  {num:2, icon:'🧋',text:'손님이 음료를 사 마셔요',type:'소비'},
+  {num:3, icon:'✏️',text:'문구점 사장님이 학용품을 팔아요',type:'생산'},
+  {num:4, icon:'📝',text:'학생이 연필을 사요',type:'소비'},
+  {num:5, icon:'🍞',text:'빵집 사장님이 빵을 만들어요',type:'생산'},
+  {num:6, icon:'🥖',text:'엄마가 빵을 사 먹어요',type:'소비'},
+  {num:7, icon:'👨‍⚕️',text:'의사 선생님이 아픈 사람을 치료해요',type:'생산'},
+  {num:8, icon:'🏥',text:'환자가 진료를 받아요',type:'소비'},
+  {num:9, icon:'🏦',text:'은행원이 돈을 안전하게 보관해 줘요',type:'생산'},
+  {num:10,icon:'💰',text:'사람들이 저금을 해요',type:'소비'},
+  {num:11,icon:'🛒',text:'마트 직원이 물건을 정리하고 팔아요',type:'생산'},
+  {num:12,icon:'🍎',text:'가족이 과일과 음식을 사요',type:'소비'},
+  {num:13,icon:'💵',text:'마트 직원이 월급을 받아요',type:'분배'},
+  {num:14,icon:'💳',text:'카페 직원이 월급을 받아요',type:'분배'},
+  {num:15,icon:'🏆',text:'도착!',type:null},
+];
+const NCOLS=['#e91e63','#ff5722','#ff9800','#4caf50','#2196f3','#9c27b0','#e91e63','#00bcd4','#f44336','#3f51b5','#009688','#8bc34a','#ff5722','#9c27b0','#e91e63'];
+const DFACES=['⚀','⚁','⚂','⚃','⚄','⚅'];
+const LAYOUT=[
+  {kind:'cell',n:0},{kind:'cell',n:1},{kind:'cell',n:2},{kind:'cell',n:3},{kind:'cell',n:4},
+  {kind:'cell',n:14},{kind:'info',label:'생산 활동',desc:'물건을 만들거나\n서비스를 하는 활동',ico:'👩‍🍳'},
+  {kind:'info',label:'소비 활동',desc:'물건이나 서비스를\n사용하는 활동',ico:'🛍️'},
+  {kind:'info',label:'분배 활동',desc:'일한 대가로\n돈이나 보상을 받는 활동',ico:'💼'},
+  {kind:'cell',n:5},
+  {kind:'cell',n:13},{kind:'empty'},{kind:'cell',n:15},{kind:'empty'},{kind:'cell',n:6},
+  {kind:'cell',n:12},{kind:'cell',n:11},{kind:'cell',n:10},{kind:'cell',n:9},{kind:'merged',ns:[8,7]},
+];
+
+let pos=0, score=0, rolling=false, pendingCell=null;
+
+function initGame(){
+  pos=0; score=0; rolling=false; pendingCell=null;
+  document.getElementById('diceEl').textContent='🎲';
+  document.getElementById('rollBtn').disabled=false;
+  document.getElementById('rollBtn').textContent='🎲 주사위 굴리기';
+  document.getElementById('quizOverlay').style.display='none';
+  document.getElementById('resultOverlay').style.display='none';
+  document.getElementById('endOverlay').style.display='none';
+  setStatus('🎲 게임 시작!','주사위를 굴려 시작하세요');
+  updateScore();
+  renderBoard();
+}
+
+function updateScore(){
+  document.getElementById('scoreDisplay').textContent=score+'점 · '+pos+'/15칸';
+}
+
+function setStatus(t,d){
+  document.getElementById('stitle').textContent=t;
+  document.getElementById('sdesc').textContent=d;
+}
+
+function renderBoard(){
+  const b=document.getElementById('board');
+  b.innerHTML='';
+  LAYOUT.forEach(item=>{
+    const div=document.createElement('div');
+    if(item.kind==='cell'){
+      const d=CELLS[item.n];
+      div.className='cell'+(d.num===0?' start-cell':d.num===15?' finish-cell':'');
+      div.id='cell-'+d.num;
+      if(d.num===0){
+        div.innerHTML=`<div style="font-size:20px">🚀</div><div class="ctext" style="font-weight:800;color:#2e7d32">출발!</div><div style="font-size:16px;color:#4caf50">→</div>`;
+      } else if(d.num===15){
+        div.innerHTML=`<div style="font-size:20px">🏆</div><div class="ctext" style="font-weight:800;color:#e65100">도착!</div>`;
+      } else {
+        div.innerHTML=`<div class="cnum" style="background:${NCOLS[d.num-1]}">${d.num}</div><div class="cicon">${d.icon}</div><div class="ctext">${d.text}</div>`;
+      }
+    } else if(item.kind==='merged'){
+      div.className='cell';
+      div.id='cell-merged';
+      div.style.flexDirection='row';
+      div.style.gap='2px';
+      div.innerHTML=item.ns.map(n=>{const d=CELLS[n];return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-between;min-height:70px"><div class="cnum" style="background:${NCOLS[d.num-1]}">${d.num}</div><div style="font-size:12px">${d.icon}</div><div class="ctext" style="font-size:7.5px">${d.text}</div></div>`;}).join('<div style="width:1px;background:#eee"></div>');
+    } else if(item.kind==='info'){
+      div.className='info-cell';
+      div.innerHTML=`<div style="font-size:20px">${item.ico}</div><div style="font-size:9.5px;font-weight:800;color:#333;margin:2px 0">${item.label}</div><div style="font-size:8px;color:#666;white-space:pre-line;line-height:1.3">${item.desc}</div>`;
+    } else {
+      div.className='empty-cell';
+    }
+    b.appendChild(div);
+  });
+  updatePiece();
+}
+
+function getCellEl(p){
+  if(p===7||p===8) return document.getElementById('cell-merged');
+  return document.getElementById('cell-'+p);
+}
+
+function updatePiece(){
+  document.querySelectorAll('.piece').forEach(p=>p.remove());
+  document.querySelectorAll('.cell.active-cell').forEach(c=>c.classList.remove('active-cell'));
+  const el=getCellEl(pos);
+  if(!el) return;
+  const p=document.createElement('div');
+  p.className='piece';
+  p.style.background='#e91e63';
+  p.textContent='🐶';
+  el.appendChild(p);
+  el.classList.add('active-cell');
+}
+
+function rollDice(){
+  if(rolling) return;
+  rolling=true;
+  document.getElementById('rollBtn').disabled=true;
+  const de=document.getElementById('diceEl');
+  de.classList.add('rolling');
+  let t=0;
+  const iv=setInterval(()=>{
+    de.textContent=DFACES[Math.floor(Math.random()*6)];
+    t++;
+    if(t>=10){
+      clearInterval(iv);
+      de.classList.remove('rolling');
+      const val=Math.floor(Math.random()*6)+1;
+      de.textContent=DFACES[val-1];
+      setStatus(`🎲 ${val}이(가) 나왔어요!`,`${val}칸 이동합니다`);
+      setTimeout(()=>movePlayer(val),300);
+    }
+  },70);
+}
+
+function movePlayer(steps){
+  const from=pos;
+  const to=Math.min(from+steps,15);
+  let s=0;
+  const iv=setInterval(()=>{
+    s++;
+    pos=Math.min(from+s,to);
+    updatePiece();
+    updateScore();
+    if(pos>=to){
+      clearInterval(iv);
+      setTimeout(()=>landed(to),200);
+    }
+  },280);
+}
+
+function landed(p){
+  if(p===0){ rolling=false; document.getElementById('rollBtn').disabled=false; return; }
+  if(p===15){ showEnd(); return; }
+  const cell=CELLS[p];
+  pendingCell=cell;
+  document.getElementById('qicon').textContent=cell.icon;
+  document.getElementById('qtext').textContent=`"${cell.text}"\n\n이것은 어떤 활동일까요?`;
+  document.getElementById('quizOverlay').style.display='flex';
+}
+
+function answer(choice){
+  document.getElementById('quizOverlay').style.display='none';
+  const correct=pendingCell.type;
+  const isRight=(choice===correct);
+  if(isRight) score+=10;
+  updateScore();
+  const typeDesc={생산:'⚙️ 생산 활동\n물건을 만들거나 서비스를 하는 활동이에요!',소비:'🛍️ 소비 활동\n물건이나 서비스를 사용하는 활동이에요!',분배:'💰 분배 활동\n일한 대가로 돈이나 보상을 받는 활동이에요!'};
+  document.getElementById('rBig').textContent=isRight?'🎉':'😢';
+  document.getElementById('rTitle').textContent=isRight?'정답이에요!':'아쉬워요!';
+  document.getElementById('rMsg').textContent=isRight?`+10점!\n정답은 "${correct}" 활동이에요.\n${typeDesc[correct]}`:`정답은 "${correct}" 활동이에요.\n${typeDesc[correct]}`;
+  const el=getCellEl(pendingCell.num);
+  if(el){ el.classList.add(isRight?'correct-cell':'wrong-cell'); setTimeout(()=>{el.classList.remove('correct-cell','wrong-cell')},2000); }
+  document.getElementById('resultOverlay').style.display='flex';
+}
+
+function closeResult(){
+  document.getElementById('resultOverlay').style.display='none';
+  if(pos===15){ showEnd(); return; }
+  rolling=false;
+  document.getElementById('rollBtn').disabled=false;
+  setStatus('🎲 주사위를 굴려보세요!',`현재 점수: ${score}점`);
+}
+
+function showEnd(){
+  const total=14;
+  const msg=score>=120?'🌟 완벽해요! 경제 전문가네요!':score>=80?'👍 잘했어요! 경제 개념을 잘 알고 있어요!':score>=40?'😊 괜찮아요! 다시 한번 도전해봐요!':'💪 조금 더 공부하고 다시 도전해봐요!';
+  document.getElementById('endScore').textContent=`최종 점수: ${score}점`;
+  document.getElementById('endMsg').textContent=msg;
+  document.getElementById('endOverlay').style.display='flex';
+}
+
+function resetGame(){ initGame(); }
+initGame();
+</script>
